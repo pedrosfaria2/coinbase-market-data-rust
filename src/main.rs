@@ -10,13 +10,14 @@ use handlers::{
     server_time_handler::fetch_server_time_handler,
     specific_product_handler::fetch_specific_product_handler,
 };
-use std::io::{self, Write};
-use tokio::sync::watch;
-use tokio::{self, signal};
+use std::io::{self, Write}; // Import standard I/O library
+use tokio::sync::watch; // Import watch for task signaling
+use tokio::{self, signal}; // Import tokio and signal handling
 
 #[tokio::main]
 async fn main() -> Result<()> {
     loop {
+        // Display menu options to the user
         println!("Menu:");
         println!("1. Fetch and print all products");
         println!("2. Fetch and print server time");
@@ -28,24 +29,27 @@ async fn main() -> Result<()> {
         print!("Enter your choice: ");
         io::stdout().flush().unwrap();
 
+        // Read and parse user input
         let mut choice = String::new();
         io::stdin().read_line(&mut choice).unwrap();
         let choice = choice.trim().parse::<u8>().unwrap_or(0);
 
+        // Match the user's choice and execute the corresponding handler
         match choice {
-            1 => fetch_products_handler().await?,
-            2 => fetch_server_time_handler().await?,
-            3 => start_looping_task(fetch_product_book_handler).await?,
-            4 => fetch_candles_handler().await?,
-            5 => start_looping_task(fetch_market_trades_handler).await?,
-            6 => start_looping_task(fetch_specific_product_handler).await?,
-            7 => break,
+            1 => fetch_products_handler().await?,    // Fetch all products
+            2 => fetch_server_time_handler().await?, // Fetch server time
+            3 => start_looping_task(fetch_product_book_handler).await?, // Fetch order book
+            4 => fetch_candles_handler().await?,     // Fetch candles
+            5 => start_looping_task(fetch_market_trades_handler).await?, // Fetch market trades
+            6 => start_looping_task(fetch_specific_product_handler).await?, // Fetch specific product data
+            7 => break,                                                     // Exit the loop
             _ => println!("Invalid choice, please try again."),
         }
     }
     Ok(())
 }
 
+// Prompt the user to enter a product ID
 fn prompt_for_product_id() -> String {
     print!("Enter the product ID: ");
     io::stdout().flush().unwrap();
@@ -54,6 +58,7 @@ fn prompt_for_product_id() -> String {
     product_id.trim().to_string()
 }
 
+// Start a looping task that listens for a stop signal (Ctrl+C)
 async fn start_looping_task<F, Fut>(task: F) -> Result<()>
 where
     F: Fn(watch::Receiver<()>) -> Fut + Send + 'static,

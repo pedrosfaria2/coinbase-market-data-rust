@@ -1,34 +1,38 @@
-use crate::api::products::fetch_products;
-use crate::models::Product;
-use anyhow::Result;
-use prettytable::{format, row, Cell, Row, Table};
-use std::io::{self, Write};
+use crate::api::products::fetch_products; // Importing the fetch_products function.
+use crate::models::Product; // Importing the Product model.
+use anyhow::Result; // Importing the Result type from anyhow for error handling.
+use prettytable::{format, row, Cell, Row, Table}; // Importing prettytable components for table formatting and display.
+use std::io::{self, Write}; // Importing IO components for user input/output handling.
 
+// Asynchronously fetches and displays the list of products, allowing the user to choose between synthetic and complete views.
 pub async fn fetch_products_handler() -> Result<()> {
+    // Fetching products and handling potential errors.
     let products = match fetch_products().await {
-        Ok(products) => products,
+        Ok(products) => products, // If successful, store the products.
         Err(e) => {
-            println!("Error fetching products: {:?}", e);
+            println!("Error fetching products: {:?}", e); // Print error message.
             return Ok(());
         }
     };
 
+    // Loop to prompt the user for display mode choice.
     loop {
         println!("Choose display mode:");
         println!("1. Synthetic view");
         println!("2. Complete view");
         print!("Enter your choice: ");
-        io::stdout().flush().unwrap();
+        io::stdout().flush().unwrap(); // Flush the output buffer.
 
         let mut choice = String::new();
-        io::stdin().read_line(&mut choice).unwrap();
-        let choice = choice.trim().parse::<u8>().unwrap_or(0);
+        io::stdin().read_line(&mut choice).unwrap(); // Read user input.
+        let choice = choice.trim().parse::<u8>().unwrap_or(0); // Parse input to u8, default to 0 on error.
 
+        // Match user choice to corresponding display function.
         match choice {
-            1 => display_synthetic_view(&products),
-            2 => display_complete_view(&products),
+            1 => display_synthetic_view(&products), // Display synthetic view.
+            2 => display_complete_view(&products),  // Display complete view.
             _ => {
-                println!("Invalid choice, please try again.");
+                println!("Invalid choice, please try again."); // Handle invalid input.
                 continue;
             }
         }
@@ -37,6 +41,7 @@ pub async fn fetch_products_handler() -> Result<()> {
     Ok(())
 }
 
+// Function to display a synthetic view of products.
 fn display_synthetic_view(products: &Vec<Product>) {
     let mut table = Table::new();
     table.add_row(row![
@@ -47,8 +52,9 @@ fn display_synthetic_view(products: &Vec<Product>) {
         "Base Name",
         "Quote Name",
         "Status"
-    ]);
+    ]); // Adding header row.
 
+    // Iterating through products and adding rows to the table.
     for product in products {
         table.add_row(row![
             product.product_id,
@@ -61,12 +67,13 @@ fn display_synthetic_view(products: &Vec<Product>) {
         ]);
     }
 
-    table.printstd();
+    table.printstd(); // Printing the table.
 }
 
+// Function to display a complete view of products.
 fn display_complete_view(products: &Vec<Product>) {
     let mut table = Table::new();
-    table.set_format(*format::consts::FORMAT_NO_BORDER_LINE_SEPARATOR);
+    table.set_format(*format::consts::FORMAT_NO_BORDER_LINE_SEPARATOR); // Setting table format.
     table.add_row(Row::new(vec![
         Cell::new("Product ID"),
         Cell::new("Price"),
@@ -104,8 +111,9 @@ fn display_complete_view(products: &Vec<Product>) {
         Cell::new("Display Name"),
         Cell::new("Product Venue"),
         Cell::new("Approximate Quote 24h Volume"),
-    ]));
+    ])); // Adding header row.
 
+    // Iterating through products and adding rows to the table.
     for product in products {
         table.add_row(Row::new(vec![
             Cell::new(&product.product_id),
@@ -147,9 +155,10 @@ fn display_complete_view(products: &Vec<Product>) {
         ]));
     }
 
-    table.printstd();
+    table.printstd(); // Printing the table.
 }
 
+// Helper function to format boolean values as "Yes" or "No".
 fn format_bool(value: bool) -> String {
     if value {
         "Yes".to_string()
