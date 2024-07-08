@@ -36,7 +36,7 @@ async fn main() -> Result<()> {
             1 => fetch_products_handler().await?,
             2 => fetch_server_time_handler().await?,
             3 => start_looping_task(fetch_product_book_handler).await?,
-            4 => start_looping_task(fetch_candles_handler).await?,
+            4 => fetch_candles_handler().await?,
             5 => start_looping_task(fetch_market_trades_handler).await?,
             6 => start_looping_task(fetch_specific_product_handler).await?,
             7 => break,

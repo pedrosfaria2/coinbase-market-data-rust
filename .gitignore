@@ -9,6 +9,18 @@
 /.vscode/
 /.editorconfig
 
+# Ignore JetBrains IDEs (RustRover, IntelliJ, etc.)
+.idea/
+/*.iml
+/out/
+/*.ipr
+/.idea/
+/.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
 # Ignore log files
 *.log
 
