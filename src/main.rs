@@ -1,51 +1,67 @@
 mod api;
 mod models;
 mod utils;
+mod handlers;
 
-use api::{
-    candles::fetch_candles,
-    market_trades::fetch_market_trades,
-    product_book::fetch_product_book,
-    products::fetch_products,
-    server_time::fetch_server_time,
+use handlers::{
+    candles_handler::fetch_candles_handler,
+    market_trades_handler::fetch_market_trades_handler,
+    product_book_handler::fetch_product_book_handler,
+    products_handler::fetch_products_handler,
+    server_time_handler::fetch_server_time_handler,
 };
-use tokio::main;
+use tokio::{self, signal};
+use std::io::{self, Write};
+use anyhow::Result;
+use tokio::sync::watch;
 
-#[main]
-async fn main() -> Result<(), reqwest::Error> {
-    // Fetch and print all products
-    match fetch_products().await {
-        Ok(products) => println!("Products: {:?}", products),
-        Err(e) => println!("Error fetching products: {:?}", e),
+#[tokio::main]
+async fn main() -> Result<()> {
+    loop {
+        println!("Menu:");
+        println!("1. Fetch and print all products");
+        println!("2. Fetch and print server time");
+        println!("3. Fetch and print order book for a specific product");
+        println!("4. Fetch and print candles for a specific product");
+        println!("5. Fetch and print market trades for a specific product");
+        println!("6. Exit");
+        print!("Enter your choice: ");
+        io::stdout().flush().unwrap();
+
+        let mut choice = String::new();
+        io::stdin().read_line(&mut choice).unwrap();
+        let choice = choice.trim().parse::<u8>().unwrap_or(0);
+
+        match choice {
+            1 => fetch_products_handler().await?,
+            2 => fetch_server_time_handler().await?,
+            3 => start_looping_task(fetch_product_book_handler).await?,
+            4 => start_looping_task(fetch_candles_handler).await?,
+            5 => start_looping_task(fetch_market_trades_handler).await?,
+            6 => break,
+            _ => println!("Invalid choice, please try again."),
+        }
     }
+    Ok(())
+}
 
-    // Fetch and print server time
-    match fetch_server_time().await {
-        Ok(server_time) => println!("Server Time: {:?}", server_time),
-        Err(e) => println!("Error fetching server time: {:?}", e),
-    }
+fn prompt_for_product_id() -> String {
+    print!("Enter the product ID: ");
+    io::stdout().flush().unwrap();
+    let mut product_id = String::new();
+    io::stdin().read_line(&mut product_id).unwrap();
+    product_id.trim().to_string()
+}
 
-    // Fetch and print order book for a specific product
-    let product_id = "BTC-USD";
-    match fetch_product_book(product_id).await {
-        Ok(product_book) => println!("Product Book for {}: {:?}", product_id, product_book),
-        Err(e) => println!("Error fetching product book for {}: {:?}", product_id, e),
-    }
-
-    // Fetch and print candles for a specific product
-    let start = "2022-01-01T00:00:00Z";
-    let end = "2022-01-02T00:00:00Z";
-    let granularity = "ONE_HOUR";
-    match fetch_candles(product_id, start, end, granularity).await {
-        Ok(candles) => println!("Candles for {}: {:?}", product_id, candles),
-        Err(e) => println!("Error fetching candles for {}: {:?}", product_id, e),
-    }
-
-    // Fetch and print market trades for a specific product
-    match fetch_market_trades(product_id).await {
-        Ok(market_trades) => println!("Market Trades for {}: {:?}", product_id, market_trades),
-        Err(e) => println!("Error fetching market trades for {}: {:?}", product_id, e),
-    }
-
+async fn start_looping_task<F, Fut>(task: F) -> Result<()>
+where
+    F: Fn(watch::Receiver<()>) -> Fut + Send + 'static,
+    Fut: std::future::Future<Output = Result<()>> + Send + 'static,
+{
+    let (tx, rx) = watch::channel(());
+    let handle = tokio::spawn(task(rx));
+    signal::ctrl_c().await?;
+    drop(tx);  // Dropping the sender to signal the task to stop
+    handle.await??;
     Ok(())
 }
