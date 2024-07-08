@@ -1,0 +1,37 @@
+# Ignore generated binaries
+/target/
+
+# Ignore downloaded dependencies
+**/*.rs.bk
+
+# Ignore editor configuration files
+.idea/
+/.vscode/
+/.editorconfig
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+*.tmp
+*.swp
+*.swo
+*.bak
+
+# Ignore build files
+*.o
+*.obj
+*.dll
+*.exe
+*.so
+*.dylib
+*.class
+
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db
+
+# Ignore Rust-related files
+**/*.rs.bk
+Cargo.lock
+/target/
