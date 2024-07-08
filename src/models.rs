@@ -4,60 +4,60 @@ use std::vec::Vec;
 
 #[derive(Deserialize, Debug)]
 pub struct ServerTime {
-    pub iso: String,  // ISO formatted date-time string
+    pub iso: String, // ISO formatted date-time string
     #[serde(rename = "epochSeconds")]
-    pub epoch_seconds: String,  // Epoch time in seconds as a string
+    pub epoch_seconds: String, // Epoch time in seconds as a string
     #[serde(rename = "epochMillis")]
-    pub epoch_millis: String,  // Epoch time in milliseconds as a string
+    pub epoch_millis: String, // Epoch time in milliseconds as a string
 }
 
 #[derive(Deserialize, Debug)]
 pub struct ProductBookEntry {
-    pub price: String,  // Price of the bid or ask
+    pub price: String, // Price of the bid or ask
     pub size: String,  // Size of the bid or ask
 }
 
 #[derive(Deserialize, Debug)]
 pub struct ProductBookPriceBook {
-    pub product_id: String,  // ID of the product
-    pub bids: Vec<ProductBookEntry>,  // List of bids
-    pub asks: Vec<ProductBookEntry>,  // List of asks
-    pub time: String,  // Timestamp of the price book
+    pub product_id: String,          // ID of the product
+    pub bids: Vec<ProductBookEntry>, // List of bids
+    pub asks: Vec<ProductBookEntry>, // List of asks
+    pub time: String,                // Timestamp of the price book
 }
 
 #[derive(Deserialize, Debug)]
 pub struct ProductBook {
-    pub pricebook: ProductBookPriceBook,  // Nested Price Book
+    pub pricebook: ProductBookPriceBook, // Nested Price Book
 }
 
 #[derive(Deserialize, Debug)]
 pub struct FCMTradingSessionDetails {
-    pub is_session_open: Option<bool>,  // Indicates if the session is open
-    pub open_time: Option<String>,  // Opening time of the session
-    pub close_time: Option<String>,  // Closing time of the session
+    pub is_session_open: Option<bool>, // Indicates if the session is open
+    pub open_time: Option<String>,     // Opening time of the session
+    pub close_time: Option<String>,    // Closing time of the session
 }
 
 #[derive(Deserialize, Debug)]
 pub struct PerpetualDetails {
-    pub open_interest: Option<String>,  // Open interest for perpetual contracts
+    pub open_interest: Option<String>, // Open interest for perpetual contracts
     pub funding_rate: Option<String>,  // Funding rate for perpetual contracts
     pub funding_time: Option<String>,  // Funding time for perpetual contracts
 }
 
 #[derive(Deserialize, Debug)]
 pub struct FutureProductDetails {
-    pub venue: Option<String>,  // Venue of the future product
-    pub contract_code: Option<String>,  // Contract code of the future product
-    pub contract_expiry: Option<String>,  // Expiry date of the contract
-    pub contract_size: Option<String>,  // Size of the contract
-    pub contract_root_unit: Option<String>,  // Root unit of the contract
-    pub group_description: Option<String>,  // Description of the group
-    pub contract_expiry_timezone: Option<String>,  // Timezone of the contract expiry
+    pub venue: Option<String>,                    // Venue of the future product
+    pub contract_code: Option<String>,            // Contract code of the future product
+    pub contract_expiry: Option<String>,          // Expiry date of the contract
+    pub contract_size: Option<String>,            // Size of the contract
+    pub contract_root_unit: Option<String>,       // Root unit of the contract
+    pub group_description: Option<String>,        // Description of the group
+    pub contract_expiry_timezone: Option<String>, // Timezone of the contract expiry
     pub group_short_description: Option<String>,  // Short description of the group
-    pub risk_managed_by: Option<String>,  // Entity managing the risk
-    pub contract_expiry_type: Option<String>,  // Type of contract expiry
-    pub perpetual_details: Option<PerpetualDetails>,  // Perpetual details (if any)
-    pub contract_display_name: Option<String>,  // Display name of the contract
+    pub risk_managed_by: Option<String>,          // Entity managing the risk
+    pub contract_expiry_type: Option<String>,     // Type of contract expiry
+    pub perpetual_details: Option<PerpetualDetails>, // Perpetual details (if any)
+    pub contract_display_name: Option<String>,    // Display name of the contract
 }
 
 #[derive(Deserialize, Debug)]
@@ -108,11 +108,11 @@ pub struct ProductsResponse {
 #[derive(Deserialize, Debug)]
 pub struct Candle {
     pub start: String,  // Start time of the candle
-    pub low: String,  // Low price during the candle period
-    pub high: String,  // High price during the candle period
-    pub open: String,  // Opening price of the candle
+    pub low: String,    // Low price during the candle period
+    pub high: String,   // High price during the candle period
+    pub open: String,   // Opening price of the candle
     pub close: String,  // Closing price of the candle
-    pub volume: String,  // Volume during the candle period
+    pub volume: String, // Volume during the candle period
 }
 
 #[derive(Deserialize, Debug)]
@@ -122,14 +122,14 @@ pub struct CandlesResponse {
 
 #[derive(Deserialize, Debug)]
 pub struct MarketTrade {
-    pub trade_id: String,  // ID of the trade
+    pub trade_id: String,    // ID of the trade
     pub product_id: String,  // ID of the product
-    pub price: String,  // Price at which the trade occurred
-    pub size: String,  // Size of the trade
-    pub time: String,  // Time at which the trade occurred
-    pub side: String,  // Side of the trade (buy/sell)
-    pub bid: Option<String>,  // Bid price at the time of the trade (optional)
-    pub ask: Option<String>,  // Ask price at the time of the trade (optional)
+    pub price: String,       // Price at which the trade occurred
+    pub size: String,        // Size of the trade
+    pub time: String,        // Time at which the trade occurred
+    pub side: String,        // Side of the trade (buy/sell)
+    pub bid: Option<String>, // Bid price at the time of the trade (optional)
+    pub ask: Option<String>, // Ask price at the time of the trade (optional)
 }
 
 #[derive(Deserialize, Debug)]

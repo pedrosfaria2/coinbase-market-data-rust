@@ -1,8 +1,8 @@
-use anyhow::Result;
-use tokio::sync::watch;
-use std::time::Duration;
 use crate::api::candles::fetch_candles;
 use crate::prompt_for_product_id;
+use anyhow::Result;
+use std::time::Duration;
+use tokio::sync::watch;
 use tokio::time;
 
 pub async fn fetch_candles_handler(mut stop: watch::Receiver<()>) -> Result<()> {

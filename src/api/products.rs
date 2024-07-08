@@ -1,6 +1,6 @@
-use anyhow::Result;
-use crate::models::{ProductsResponse, Product};
+use crate::models::{Product, ProductsResponse};
 use crate::utils::BASE_URL;
+use anyhow::Result;
 
 pub async fn fetch_products() -> Result<Vec<Product>> {
     let url = format!("{}/market/products", BASE_URL);

@@ -1,6 +1,6 @@
-use anyhow::Result;
-use crate::models::{MarketTradesResponse, MarketTrade};
+use crate::models::{MarketTrade, MarketTradesResponse};
 use crate::utils::BASE_URL;
+use anyhow::Result;
 
 pub async fn fetch_market_trades(product_id: &str) -> Result<Vec<MarketTrade>> {
     let url = format!("{}/market/products/{}/ticker", BASE_URL, product_id);

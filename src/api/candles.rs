@@ -1,9 +1,14 @@
+use crate::models::{Candle, CandlesResponse};
+use crate::utils::BASE_URL;
 use anyhow::Result;
 use chrono::{DateTime, Utc};
-use crate::models::{CandlesResponse, Candle};
-use crate::utils::BASE_URL;
 
-pub async fn fetch_candles(product_id: &str, start: &str, end: &str, granularity: &str) -> Result<Vec<Candle>> {
+pub async fn fetch_candles(
+    product_id: &str,
+    start: &str,
+    end: &str,
+    granularity: &str,
+) -> Result<Vec<Candle>> {
     // Convert ISO date strings to Unix timestamps
     let start_dt: DateTime<Utc> = start.parse()?;
     let end_dt: DateTime<Utc> = end.parse()?;

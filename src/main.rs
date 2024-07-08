@@ -1,19 +1,17 @@
 mod api;
+mod handlers;
 mod models;
 mod utils;
-mod handlers;
 
+use anyhow::Result;
 use handlers::{
-    candles_handler::fetch_candles_handler,
-    market_trades_handler::fetch_market_trades_handler,
-    product_book_handler::fetch_product_book_handler,
-    products_handler::fetch_products_handler,
+    candles_handler::fetch_candles_handler, market_trades_handler::fetch_market_trades_handler,
+    product_book_handler::fetch_product_book_handler, products_handler::fetch_products_handler,
     server_time_handler::fetch_server_time_handler,
 };
-use tokio::{self, signal};
 use std::io::{self, Write};
-use anyhow::Result;
 use tokio::sync::watch;
+use tokio::{self, signal};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -61,7 +59,7 @@ where
     let (tx, rx) = watch::channel(());
     let handle = tokio::spawn(task(rx));
     signal::ctrl_c().await?;
-    drop(tx);  // Dropping the sender to signal the task to stop
+    drop(tx); // Dropping the sender to signal the task to stop
     handle.await??;
     Ok(())
 }

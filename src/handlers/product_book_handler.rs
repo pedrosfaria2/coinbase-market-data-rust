@@ -1,8 +1,8 @@
-use anyhow::Result;
-use tokio::sync::watch;
-use std::time::Duration;
 use crate::api::product_book::fetch_product_book;
 use crate::prompt_for_product_id;
+use anyhow::Result;
+use std::time::Duration;
+use tokio::sync::watch;
 use tokio::time;
 
 pub async fn fetch_product_book_handler(mut stop: watch::Receiver<()>) -> Result<()> {

@@ -1,7 +1,7 @@
-use anyhow::Result;
 use crate::api::products::fetch_products;
-use prettytable::{Table, Row, Cell, format, row};
 use crate::models::Product;
+use anyhow::Result;
+use prettytable::{format, row, Cell, Row, Table};
 use std::io::{self, Write};
 
 pub async fn fetch_products_handler() -> Result<()> {
@@ -39,7 +39,15 @@ pub async fn fetch_products_handler() -> Result<()> {
 
 fn display_synthetic_view(products: &Vec<Product>) {
     let mut table = Table::new();
-    table.add_row(row!["Product ID", "Price", "24h Change %", "Volume 24h", "Base Name", "Quote Name", "Status"]);
+    table.add_row(row![
+        "Product ID",
+        "Price",
+        "24h Change %",
+        "Volume 24h",
+        "Base Name",
+        "Quote Name",
+        "Status"
+    ]);
 
     for product in products {
         table.add_row(row![

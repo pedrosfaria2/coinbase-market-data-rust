@@ -1,6 +1,6 @@
-use anyhow::Result;
 use crate::models::ServerTime;
 use crate::utils::BASE_URL;
+use anyhow::Result;
 
 pub async fn fetch_server_time() -> Result<ServerTime> {
     let url = format!("{}/time", BASE_URL);

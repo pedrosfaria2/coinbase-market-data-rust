@@ -1,11 +1,11 @@
-use anyhow::Result;
-use tokio::sync::watch;
-use std::time::Duration;
 use crate::api::market_trades::fetch_market_trades;
-use crate::prompt_for_product_id;
-use tokio::time;
-use prettytable::{Table, Row, Cell, format};
 use crate::models::MarketTrade;
+use crate::prompt_for_product_id;
+use anyhow::Result;
+use prettytable::{format, Cell, Row, Table};
+use std::time::Duration;
+use tokio::sync::watch;
+use tokio::time;
 
 pub async fn fetch_market_trades_handler(mut stop: watch::Receiver<()>) -> Result<()> {
     let product_id = prompt_for_product_id();
