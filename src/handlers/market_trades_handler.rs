@@ -16,7 +16,7 @@ pub async fn fetch_market_trades_handler(mut stop: watch::Receiver<()>) -> Resul
                 println!("Stopping fetch_market_trades_handler");
                 break;
             }
-            _ = time::sleep(Duration::from_millis(10)) => {
+            _ = time::sleep(Duration::from_millis(200)) => {
                 match fetch_market_trades(&product_id).await {
                     Ok(market_trades) => display_market_trades(&market_trades, &mut header_printed),
                     Err(e) => println!("Error fetching market trades for {}: {:?}", product_id, e),

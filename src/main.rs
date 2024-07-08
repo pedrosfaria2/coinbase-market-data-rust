@@ -8,6 +8,7 @@ use handlers::{
     candles_handler::fetch_candles_handler, market_trades_handler::fetch_market_trades_handler,
     product_book_handler::fetch_product_book_handler, products_handler::fetch_products_handler,
     server_time_handler::fetch_server_time_handler,
+    specific_product_handler::fetch_specific_product_handler,
 };
 use std::io::{self, Write};
 use tokio::sync::watch;
@@ -22,7 +23,8 @@ async fn main() -> Result<()> {
         println!("3. Fetch and print order book for a specific product");
         println!("4. Fetch and print candles for a specific product");
         println!("5. Fetch and print market trades for a specific product");
-        println!("6. Exit");
+        println!("6. Fetch and print data for a specific product");
+        println!("7. Exit");
         print!("Enter your choice: ");
         io::stdout().flush().unwrap();
 
@@ -36,7 +38,8 @@ async fn main() -> Result<()> {
             3 => start_looping_task(fetch_product_book_handler).await?,
             4 => start_looping_task(fetch_candles_handler).await?,
             5 => start_looping_task(fetch_market_trades_handler).await?,
-            6 => break,
+            6 => start_looping_task(fetch_specific_product_handler).await?,
+            7 => break,
             _ => println!("Invalid choice, please try again."),
         }
     }
