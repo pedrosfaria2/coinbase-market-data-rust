@@ -32,11 +32,27 @@ pub async fn fetch_specific_product_handler(mut stop: watch::Receiver<()>) -> Re
 
 // Displays the specific product information in a formatted table.
 fn display_specific_product(product: &Product) {
-    println!("{:<20} {:<15} {:<20} {:<20} {:<20} {:<10} {:<10} {:<10}", 
-        "Product ID", "Price", "24h Change %", "Volume 24h", "Volume 24h Change %", "Status", "Base", "Quote");
+    println!(
+        "{:<20} {:<15} {:<20} {:<20} {:<20} {:<10} {:<10} {:<10}",
+        "Product ID",
+        "Price",
+        "24h Change %",
+        "Volume 24h",
+        "Volume 24h Change %",
+        "Status",
+        "Base",
+        "Quote"
+    );
 
-    println!("{:<20} {:<15} {:<20} {:<20} {:<20} {:<10} {:<10} {:<10}", 
-        product.product_id, product.price, product.price_percentage_change_24h, 
-        product.volume_24h, product.volume_percentage_change_24h, 
-        product.status, product.base_name, product.quote_name);
+    println!(
+        "{:<20} {:<15} {:<20} {:<20} {:<20} {:<10} {:<10} {:<10}",
+        product.product_id,
+        product.price,
+        product.price_percentage_change_24h,
+        product.volume_24h,
+        product.volume_percentage_change_24h,
+        product.status,
+        product.base_name,
+        product.quote_name
+    );
 }

@@ -36,9 +36,14 @@ pub async fn fetch_product_book_handler(mut stop: watch::Receiver<()>) -> Result
 
 // Function to display the product book with levels of depth.
 fn display_product_book(product_book: &ProductBook) {
-    let max_levels = 20.min(product_book.pricebook.bids.len()).min(product_book.pricebook.asks.len());
+    let max_levels = 20
+        .min(product_book.pricebook.bids.len())
+        .min(product_book.pricebook.asks.len());
 
-    println!("{:<10} {:<10} {:<10} {:<10}", "Price", "Bid Size", "Price", "Ask Size");
+    println!(
+        "{:<10} {:<10} {:<10} {:<10}",
+        "Price", "Bid Size", "Price", "Ask Size"
+    );
 
     for i in 0..max_levels {
         let bid = &product_book.pricebook.bids[i];
