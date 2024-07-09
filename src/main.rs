@@ -1,10 +1,10 @@
 mod api;
-mod handlers;
-mod models;
-mod utils;
-mod menu;
 mod clear_screen;
+mod handlers;
+mod menu;
+mod models;
 mod task_runner;
+mod utils;
 
 use anyhow::Result;
 

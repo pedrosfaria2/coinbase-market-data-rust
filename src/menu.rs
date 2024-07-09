@@ -11,8 +11,8 @@ use std::io::{self, Write};
 
 pub async fn show_menu() -> Result<()> {
     loop {
-        // Clear the screen before displaying the menu
         // Display menu options to the user
+        println!("");
         println!("");
         println!("Menu:");
         println!("1. Fetch and print all products");
@@ -61,7 +61,7 @@ pub async fn show_menu() -> Result<()> {
             }
             7 => {
                 clear_screen::clear_screen();
-                fetch_all_data().await?;
+                start_looping_task(fetch_all_data).await?;
             }
             8 => break, // Exit the loop
             _ => println!("Invalid choice, please try again."),

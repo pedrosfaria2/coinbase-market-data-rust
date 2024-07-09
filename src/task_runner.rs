@@ -9,14 +9,13 @@ use tokio::sync::watch;
 use tokio::{self, signal};
 
 // Fetches and prints all data for a specific product
-pub async fn fetch_all_data() -> Result<()> {
-    let product_id = prompt_for_product_id(); // Prompt the user to enter a product ID
-    let (_tx, rx) = watch::channel(());
-
+pub async fn fetch_all_data(rx: watch::Receiver<()>, product_id: String) -> Result<()> {
     // Spawn all handlers concurrently
-    let product_book_handle = fetch_product_book_handler(rx.clone(), product_id.clone());
-    let market_trades_handle = fetch_market_trades_handler(rx.clone(), product_id.clone());
-    let specific_product_handle = fetch_specific_product_handler(rx.clone(), product_id.clone());
+    let product_book_handle =
+        tokio::spawn(fetch_product_book_handler(rx.clone(), product_id.clone()));
+    let market_trades_handle =
+        tokio::spawn(fetch_market_trades_handler(rx.clone(), product_id.clone()));
+    let specific_product_handle = tokio::spawn(fetch_specific_product_handler(rx, product_id));
 
     // Wait for all handlers to complete and collect results
     let (product_book_res, market_trades_res, specific_product_res) = tokio::join!(
@@ -39,9 +38,6 @@ pub async fn fetch_all_data() -> Result<()> {
     // Clear the screen after processing the data
     clear_screen();
 
-    // Print results (assuming each handler function prints its own results)
-    // You can also collect and print the results here if needed
-
     Ok(())
 }
 
@@ -60,17 +56,33 @@ where
     F: Fn(watch::Receiver<()>, String) -> Fut + Send + 'static,
     Fut: std::future::Future<Output = Result<()>> + Send + 'static,
 {
-    let (tx, rx) = watch::channel(());
-    let product_id = prompt_for_product_id();
-    let handle = tokio::spawn(task(rx, product_id));
-    let result = signal::ctrl_c().await;
-    drop(tx); // Dropping the sender to signal the task to stop
+    loop {
+        let (tx, rx) = watch::channel(());
+        let product_id = prompt_for_product_id();
+        let mut handle = tokio::spawn(task(rx.clone(), product_id.clone()));
 
-    // Clear the screen after receiving the stop signal
-    clear_screen();
+        tokio::select! {
+            _ = signal::ctrl_c() => {
+                println!("Received Ctrl+C, stopping...");
+                drop(tx); // Dropping the sender to signal the task to stop
 
-    handle.await??;
-    result?;
+                // Wait for the task to complete
+                if let Err(e) = handle.await {
+                    eprintln!("Task failed: {:?}", e);
+                }
+                break; // Exit the loop after handling Ctrl+C
+            },
+            result = &mut handle => {
+                if let Err(e) = result {
+                    eprintln!("Task failed: {:?}", e);
+                }
+            }
+        }
+
+        // Clear the screen after receiving the stop signal
+        clear_screen();
+    }
+
     Ok(())
 }
 
@@ -79,4 +91,3 @@ pub fn clear_screen() {
     print!("\x1B[2J\x1B[1;1H");
     io::stdout().flush().unwrap();
 }
-
