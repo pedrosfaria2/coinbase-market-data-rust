@@ -16,7 +16,7 @@ pub async fn fetch_specific_product_handler(
                 println!("Stopping fetch_specific_product_handler");
                 break;
             }
-            _ = time::sleep(Duration::from_millis(300)) => { // Wait for 50 milliseconds before fetching data again.
+            _ = time::sleep(Duration::from_millis(750)) => { // Wait for 50 milliseconds before fetching data again.
                 match fetch_specific_product(&product_id).await { // Fetch the specific product data.
                     Ok(product) => {
                         // Move cursor to the specific location for this handler

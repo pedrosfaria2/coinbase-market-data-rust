@@ -19,7 +19,7 @@ pub async fn fetch_market_trades_handler(
                 break; // Exit the loop.
             }
             // Adding a delay of 50 milliseconds before the next fetch.
-            _ = time::sleep(Duration::from_millis(300)) => {
+            _ = time::sleep(Duration::from_millis(750)) => {
                 // Fetching market trades and handling the result.
                 match fetch_market_trades(&product_id).await {
                     Ok(mut market_trades) => {

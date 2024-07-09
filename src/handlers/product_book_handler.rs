@@ -19,7 +19,7 @@ pub async fn fetch_product_book_handler(
                 break; // Exit the loop.
             }
             // Adding a delay of 50 milliseconds before the next fetch.
-            _ = time::sleep(Duration::from_millis(300)) => {
+            _ = time::sleep(Duration::from_millis(750)) => {
                 // Fetching the product book and handling the result.
                 match fetch_product_book(&product_id).await {
                     Ok(product_book) => {
