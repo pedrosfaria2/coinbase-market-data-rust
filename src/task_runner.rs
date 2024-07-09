@@ -4,34 +4,67 @@ use crate::handlers::{
     specific_product_handler::fetch_specific_product_handler,
 };
 use anyhow::Result;
+use std::collections::HashMap;
 use std::io::{self, Write}; // Import standard I/O library
 use tokio::sync::watch;
 use tokio::{self, signal};
 
 // Fetches and prints all data for a specific product
 pub async fn fetch_all_data(rx: watch::Receiver<()>, product_id: String) -> Result<()> {
-    // Spawn all handlers concurrently
-    let product_book_handle =
-        tokio::spawn(fetch_product_book_handler(rx.clone(), product_id.clone()));
-    let market_trades_handle =
-        tokio::spawn(fetch_market_trades_handler(rx.clone(), product_id.clone()));
-    let specific_product_handle = tokio::spawn(fetch_specific_product_handler(rx, product_id));
+    let (tx, mut rx_results) = tokio::sync::mpsc::channel(3);
 
-    // Wait for all handlers to complete and collect results
-    let (product_book_res, market_trades_res, specific_product_res) = tokio::join!(
+    // Spawn all handlers concurrently
+    let product_book_handle = tokio::spawn({
+        let tx = tx.clone();
+        let rx = rx.clone();
+        let product_id = product_id.clone();
+        async move {
+            let result = fetch_product_book_handler(rx, product_id).await;
+            tx.send(("product_book", result)).await.unwrap();
+        }
+    });
+
+    let market_trades_handle = tokio::spawn({
+        let tx = tx.clone();
+        let rx = rx.clone();
+        let product_id = product_id.clone();
+        async move {
+            let result = fetch_market_trades_handler(rx, product_id).await;
+            tx.send(("market_trades", result)).await.unwrap();
+        }
+    });
+
+    let specific_product_handle = tokio::spawn({
+        let tx = tx.clone();
+        async move {
+            let result = fetch_specific_product_handler(rx, product_id).await;
+            tx.send(("specific_product", result)).await.unwrap();
+        }
+    });
+
+    // Collect results
+    let mut results_map: HashMap<&str, Result<()>> = HashMap::new();
+    for _ in 0..3 {
+        if let Some((key, result)) = rx_results.recv().await {
+            results_map.insert(key, result);
+        }
+    }
+
+    // Wait for all handlers to complete
+    let _ = tokio::join!(
         product_book_handle,
         market_trades_handle,
         specific_product_handle
     );
 
-    // Check for any errors
-    if let Err(e) = product_book_res {
+    // Print results
+    if let Some(Err(e)) = results_map.get("product_book") {
         eprintln!("Error fetching product book: {:?}", e);
     }
-    if let Err(e) = market_trades_res {
+    if let Some(Err(e)) = results_map.get("market_trades") {
         eprintln!("Error fetching market trades: {:?}", e);
     }
-    if let Err(e) = specific_product_res {
+    if let Some(Err(e)) = results_map.get("specific_product") {
         eprintln!("Error fetching specific product data: {:?}", e);
     }
 
